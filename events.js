@@ -1,5 +1,4 @@
 var events = {
-	DB: 'newReviews',
 	
 	installNotice: function() {
 		if (localStorage.getItem('install_time')) {
@@ -15,6 +14,7 @@ var events = {
 	
 	launch: function() {
 		events.installNotice();	
+		localStorage.setItem('next_poll', 0);
 		
 		chrome.notifications.onClicked.addListener(function () {
 			crucible.getCredentials().then(function() {
@@ -22,12 +22,18 @@ var events = {
 			});
 		});
 		chrome.alarms.onAlarm.addListener(function() {
-			chrome.storage.local.get(events.DB, events.showNotifications);
+			var next = +(localStorage.getItem('next_poll') || 0);
+			if(next === 0) {
+				localStorage.setItem('next_poll', 10);
+				events.showNotifications();
+			} else {
+				localStorage.setItem('next_poll', --next);
+			}
 		});
 		
-		chrome.alarms.create("crucible", {delayInMinutes: 0.1, periodInMinutes: 10});
+		chrome.alarms.create("crucible", {delayInMinutes: 0.1, periodInMinutes: 1});
 	},
-	showNotifications: function(storedData) {
+	showNotifications: function() {		
 		crucible.getCredentials().then(function() {
 			if(!crucible.MYSELF || !crucible.PASSWORD) { return; }
 			

@@ -37,6 +37,7 @@ var popup = {
 
 			popup.listReviewsToDo();
 			popup.listCommentsToRead();
+			popup.pollRefresh();
 			
 		}, popup.openSettings);
 	},
@@ -45,6 +46,28 @@ var popup = {
 		chrome.tabs.create({
 			url: 'chrome://extensions/?options=' + chrome.runtime.id
 		});
+	},
+	
+	pollRefresh: function() {
+		var previousRun = localStorage.getItem('next_poll');
+		var refresh = function() {
+			var minutes = (localStorage.getItem('next_poll') || 0).toString();
+			if(previousRun !== minutes) {
+				popup.loading(false);
+				previousRun = minutes;
+			}
+			document.getElementById('nextRefresh').innerHTML = chrome.i18n.getMessage('nextrefresh', minutes);
+		};
+		
+		document.getElementById('manuelrefresh').addEventListener('click', function() {
+			localStorage.setItem('next_poll', 0);
+			previousRun = '0';
+			popup.loading(true);
+			refresh();
+		});
+		
+		refresh();
+		setInterval(refresh, 30000);
 	},
 	
 	getDate3MonthAgo: function() {
@@ -93,9 +116,11 @@ var popup = {
 				items.toReview.forEach(function(reviewId) {
 					var url = syncItems.restUrl + 'cru/' + reviewId;
 					tbody.push(template.replace(/\$reviewId\$/g, reviewId).replace(/\$url\$/g, url));
-					document.getElementById('reviewtodotbody').innerHTML = tbody.join('');			
-					popup.loading(false);
 				});
+				if(tbody.length) {
+					document.getElementById('reviewtodotbody').innerHTML = tbody.join('');
+				}
+				popup.loading(false);
 			});
 		});
 	},
@@ -113,13 +138,19 @@ var popup = {
 									<td class="mdl-data-table__cell--non-numeric"><a href="$url$" target="_reviews">$reviewId$</a></td> \
 								</tr>';
 				var tbody = [];
-				
+				var previous = null;
 				items.comments.forEach(function(reviewId) {
+					if(previous === reviewId) {
+						return;
+					}
+					previous = reviewId;
 					var url = syncItems.restUrl + 'cru/' + reviewId;
 					tbody.push(template.replace(/\$reviewId\$/g, reviewId).replace(/\$url\$/g, url));
-					document.getElementById('commentstoreadtbody').innerHTML = tbody.join('');			
-					popup.loading(false);
 				});
+				if(tbody.length) {
+					document.getElementById('commentstoreadtbody').innerHTML = tbody.join('');			
+				}
+				popup.loading(false);
 			});
 		});
 	},

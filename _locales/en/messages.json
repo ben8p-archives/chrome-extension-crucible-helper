@@ -59,6 +59,9 @@
 	"listinactiveuser": {
 		"message": "Inactive"
 	},
+	"refresh": {
+		"message": "Refresh"
+	},
 	"listinactiveuserdetals": {
 		"message": "List all users with no reviews at all"
 	},
@@ -72,6 +75,14 @@
 		"message": "You have $details$ reviews to do.",
 		"placeholders": {
 			"details": {
+				"content": "$1"
+			}
+		}
+	},
+	"nextrefresh": {
+		"message": "Next refresh in $minutes$ minutes.",
+		"placeholders": {
+			"minutes": {
 				"content": "$1"
 			}
 		}
