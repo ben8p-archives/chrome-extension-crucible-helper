@@ -1,6 +1,5 @@
 var events = {
 	DB: 'newReviews',
-	lastReviewCount: 0,
 	
 	installNotice: function() {
 		if (localStorage.getItem('install_time')) {
@@ -33,8 +32,9 @@ var events = {
 			if(!crucible.MYSELF || !crucible.PASSWORD) { return; }
 			
 			crucible.getReviewsToDo().then(function(reviewIds) {
-				if(events.lastReviewCount !== reviewIds.length) {
-					events.lastReviewCount = reviewIds.length;
+				var lastReviewCount = localStorage.getItem('lastReviewCount');
+				if(lastReviewCount !== reviewIds.length) {
+					localStorage.setItem('lastReviewCount', reviewIds.length);
 					if(reviewIds.length > 0) {
 						chrome.notifications.create('reminder', {
 							type: 'basic',
@@ -43,10 +43,17 @@ var events = {
 							message: chrome.i18n.getMessage('reviewsToDo', reviewIds.length.toString())
 						}, function(notificationId) {});
 					}
+					chrome.storage.local.set({
+						toReview: reviewIds
+					}, function() {});
 				}
 			});
 			crucible.getAllReviewsUserParticipatedTo(crucible.MYSELF, true).then(crucible.getReviewsWithUnreadComments).then(function(reviewIds) {
 				chrome.browserAction.setBadgeText({text: (reviewIds.length ? reviewIds.length : '').toString()});
+				
+				chrome.storage.local.set({
+					comments: reviewIds
+				}, function() {});
 			});
 			
 		});

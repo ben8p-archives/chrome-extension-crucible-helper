@@ -41,6 +41,12 @@
 	"cleanupreview": {
 		"message": "Reviews"
 	},
+	"review": {
+		"message": "Reviews"
+	},
+	"onlyadmin": {
+		"message": "This panel is only available for admins"
+	},
 	"cleanupreview3month": {
 		"message": "Close all review older than 3 months"
 	},
@@ -69,6 +75,15 @@
 				"content": "$1"
 			}
 		}
+	},
+	"todo": {
+		"message": "Reviews to do"
+	},
+	"none": {
+		"message": "none"
+	},
+	"commentstoread": {
+		"message": "Comments to read"
 	},
 	"deletableuser": {
 		"message": "The user $user$ can now be deleted.",
