@@ -17,6 +17,9 @@
 	"user": {
 		"message": "Crucible User:"
 	},
+	"admin": {
+		"message": "Are you admin?"
+	},
 	"password": {
 		"message": "Crucible Password:"
 	},

@@ -4,11 +4,13 @@ var options = {
 		var restUrl = document.getElementById('restUrl').value;
 		var user = document.getElementById('user').value;
 		var password = document.getElementById('password').value;
+		var admin = document.getElementById('switchadmin').checked;
 		
 		chrome.storage.sync.set({
 			restUrl: restUrl,
 			user: user,
-		password: password
+			password: password,
+			admin: admin
 		}, function() {
 			// Update status to let user know options were saved.
 			var status = document.getElementById('status');
@@ -26,11 +28,16 @@ var options = {
 		chrome.storage.sync.get({
 			restUrl: 'https://itrf-review.europe.intranet:8043/',
 			user: '',
-			password: ''
+			password: '',
+			admin: false
 		}, function(items) {
 			document.getElementById('restUrl').value = items.restUrl;
 			document.getElementById('user').value = items.user;
 			document.getElementById('password').value = items.password;
+			if(items.admin) {
+				document.getElementById('switchadmin').checked = true;
+				document.getElementById('switchadminmain').className += ' is-checked'
+			}
 		});
 		
 	}

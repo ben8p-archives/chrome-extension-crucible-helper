@@ -6,7 +6,11 @@ var crucible = {
 			var xhr = new XMLHttpRequest();
 			
 			xhr.addEventListener("load", function(response) {
-				resolve(response.target.responseXML);
+				if(response.target.status === 404 || response.target.status === 401) {
+					reject();
+				} else {
+					resolve(response.target.responseXML);
+				}
 			}, false);
 			xhr.addEventListener("error", reject, false);
 			
@@ -190,13 +194,15 @@ var crucible = {
 	API_ROOT: '',
 	MYSELF: '',
 	PASSWORD: '',
+	ADMIN: false,
 	
 	getCredentials: function() {
 		return new Promise(function(resolve, reject) {
 			chrome.storage.sync.get({
 				restUrl: '',
 				user: '',
-				password: ''
+				password: '',
+				admin: false
 			}, function(items) {
 				if(!items.restUrl || !items.user || !items.password) {
 					reject();
@@ -204,6 +210,7 @@ var crucible = {
 					crucible.API_ROOT = items.restUrl + (items.restUrl.substr(-1) !== '/' ? '/' : '');
 					crucible.MYSELF = items.user;
 					crucible.PASSWORD = items.password;
+					crucible.ADMIN = items.admin;
 					resolve();
 				}
 			});

@@ -16,19 +16,30 @@ var popup = {
 	},
 	onLoad: function() {
 		popup.loading(true);
-		crucible.getCredentials().then(crucible.getAllUsers).then(function(usernames) {
-			usernames.forEach(function(username) {
-				var option = document.createElement('option');
-				option.value = option.innerHTML = username;
-				document.getElementById('userlist').appendChild(option);
-				popup.loading(false);
-			});
-			document.getElementById('delete').addEventListener('click', popup.deleteUser);
-		}, popup.hasError);
-		
-		
-		document.getElementById('listinactiveusers').addEventListener('click', popup.listInactiveUsers);
-		document.getElementById('delete3month').addEventListener('click', popup.delete3month);
+		crucible.getCredentials().then(function() {
+			if(crucible.ADMIN) {
+				crucible.getAllUsers().then(function(usernames) {
+					usernames.forEach(function(username) {
+						var option = document.createElement('option');
+						option.value = option.innerHTML = username;
+						document.getElementById('userlist').appendChild(option);
+						popup.loading(false);
+					});
+					document.getElementById('delete').addEventListener('click', popup.deleteUser);
+				}, popup.hasError);
+				
+				document.getElementById('listinactiveusers').addEventListener('click', popup.listInactiveUsers);
+				document.getElementById('delete3month').addEventListener('click', popup.delete3month);
+			} else {
+				popup.openSettings();
+			}
+		}, popup.openSettings);
+	},
+	
+	openSettings: function() {
+		chrome.tabs.create({
+			url: 'chrome://extensions/?options=' + chrome.runtime.id
+		});
 	},
 	
 	getDate3MonthAgo: function() {
@@ -43,8 +54,8 @@ var popup = {
 			crucible.getOpenReviewsOlderThan(popup.getDate3MonthAgo()).then(crucible.sumarizeAndCloseAllReview).then(function() {
 				alert(chrome.i18n.getMessage('cleanup3monthdone'));
 				popup.loading(false);
-			});
-		});
+			}, popup.hasError);
+		}, popup.hasError);
 	},
 	
 	deleteUser: function() {
@@ -55,8 +66,8 @@ var popup = {
 				crucible.getReviewsFromUser(user).then(crucible.sumarizeAndCloseAllReview).then(function() {
 					alert(chrome.i18n.getMessage('deletableuser', user));
 					popup.loading(false);
-				});
-			});
+				}, popup.hasError);
+			}, popup.hasError);
 		}
 	},
 	
@@ -75,7 +86,7 @@ var popup = {
 			popup.hidden(document.getElementById('userlisttable'), false);
 			
 			popup.loading(false);
-		});
+		}, popup.hasError);
 	}
 }
 document.addEventListener('DOMContentLoaded', popup.onLoad);
