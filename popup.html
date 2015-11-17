@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+	<head>
+		<title>__MSG_name__</title>
+		<script src="popup.js"></script>
+		<script src="i18n.js"></script>
+		<script src="crucible.js"></script>
+		<link rel="stylesheet" href="style.css">
+		<link rel="stylesheet" href="mdl/material.min.css">
+		<script src="mdl/material.min.js"></script>
+	</head>
+	<body>
+		<div id="error" class="error hidden">
+			__MSG_optionsfirst__
+		</div>
+		<div id="content">
+			<div id="progress" class="hidden mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+			<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+				<div class="mdl-tabs__tab-bar">
+					<a href="#cleanupuser-panel" class="mdl-tabs__tab is-active">__MSG_cleanupuser__</a>
+					<a href="#cleanupreview-panel" class="mdl-tabs__tab">__MSG_cleanupreview__</a>
+					<a href="#listinactiveuser-panel" class="mdl-tabs__tab">__MSG_listinactiveuser__</a>
+				</div>
+
+				<div class="mdl-tabs__panel is-active" id="cleanupuser-panel">
+					<div>
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+							<select class="mdl-textfield__input" type="text" id="userlist"><option value=""></option></select>
+							<label class="mdl-textfield__label" for="userlist">__MSG_deleteuser__</label>
+						</div>
+					</div>
+					<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="delete">__MSG_cleanup__</button>
+				</div>
+			
+				<div class="mdl-tabs__panel" id="cleanupreview-panel">
+					<div>__MSG_cleanupreview3month__</div>
+					<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="delete3month">__MSG_cleanup__</button>
+				</div>
+			
+				<div class="mdl-tabs__panel" id="listinactiveuser-panel">
+					<div>__MSG_listinactiveuserdetals__</div>
+					<table id="userlisttable" class="hidden mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+						<thead>
+							<tr>
+								<th class="mdl-data-table__cell--non-numeric">__MSG_users__</th>
+							</tr>
+						</thead>
+						<tbody id="userlisttbody">
+						</tbody>
+					</table>
+					<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="listinactiveusers">__MSG_list__</button>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+

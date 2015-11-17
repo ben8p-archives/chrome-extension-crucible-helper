@@ -1,0 +1,78 @@
+{
+	"name": {
+		"message": "Crucible helper"
+	},
+	"description": {
+		"message": "This extension add some functionalities to Crucible"
+	},
+	"saved": {
+		"message": "All options are saved."
+	},
+	"options": {
+		"message": "-- Options"
+	},
+	"api": {
+		"message": "Crucible REST Api:"
+	},
+	"user": {
+		"message": "Crucible User:"
+	},
+	"password": {
+		"message": "Crucible Password:"
+	},
+	"save": {
+		"message": "Save"
+	},
+	"optionsfirst": {
+		"message": "Something went wrong, maybe you didn't configure properly the extension, or maybe you are not admin. Please first visit the options page to double check the settings"
+	},
+	"deleteuser": {
+		"message": "Select a user to cleanup. All active reviews will be closed."
+	},
+	"cleanup": {
+		"message": "Cleanup"
+	},
+	"cleanupuser": {
+		"message": "Users"
+	},
+	"cleanupreview": {
+		"message": "Reviews"
+	},
+	"cleanupreview3month": {
+		"message": "Close all review older than 3 months"
+	},
+	"cleanup3monthdone": {
+		"message": "All reviews older than 3 months are closed"
+	},
+	"dontforget": {
+		"message": "don't forget!"
+	},
+	"listinactiveuser": {
+		"message": "Inactive"
+	},
+	"listinactiveuserdetals": {
+		"message": "List all users with no reviews at all"
+	},
+	"list": {
+		"message": "Create list"
+	},
+	"users": {
+		"message": "Users"
+	},
+	"reviewsToDo": {
+		"message": "You have $details$ reviews to do.",
+		"placeholders": {
+			"details": {
+				"content": "$1"
+			}
+		}
+	},
+	"deletableuser": {
+		"message": "The user $user$ can now be deleted.",
+		"placeholders": {
+			"user": {
+				"content": "$1"
+			}
+		}
+	}
+}
