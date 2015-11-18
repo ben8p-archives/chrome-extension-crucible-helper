@@ -32,14 +32,41 @@ var popup = {
 				document.getElementById('listinactiveusers').addEventListener('click', popup.listInactiveUsers);
 				document.getElementById('delete3month').addEventListener('click', popup.delete3month);
 			}
+			
+			localStorage.setItem('manuelrefresh', false);
+			
 			popup.hidden(document.getElementById('onlyadmin'), crucible.ADMIN);
 			popup.hidden(document.getElementById('foradmin'), !crucible.ADMIN);
-
+			
+			chrome.storage.onChanged.addListener(popup.onStorageChange);
+			document.getElementById('manuelrefresh').addEventListener('click', function() {
+				chrome.storage.local.set({
+					next_poll: 0,
+					loading: (new Date()).getTime()
+				}, function() {});
+			});
+			
+			popup.refresh();
 			popup.listReviewsToDo();
 			popup.listCommentsToRead();
-			popup.pollRefresh();
 			
 		}, popup.openSettings);
+	},
+	
+	onStorageChange: function(changes) {
+		for (key in changes) {
+			if(key == 'next_poll') {
+				popup.refresh();
+			} else if(key == 'toReview') {
+				popup.listReviewsToDo();
+			} else if(key == 'comments') {
+				popup.listCommentsToRead();
+			} else if(key == 'loading') {
+				var storageChange = changes[key];
+				debugger;
+				popup.loading(!!storageChange.newValue);
+			}
+		};
 	},
 	
 	openSettings: function() {
@@ -48,26 +75,13 @@ var popup = {
 		});
 	},
 	
-	pollRefresh: function() {
-		var previousRun = localStorage.getItem('next_poll');
-		var refresh = function() {
-			var minutes = (localStorage.getItem('next_poll') || 0).toString();
-			if(previousRun !== minutes) {
-				popup.loading(false);
-				previousRun = minutes;
-			}
+	refresh: function() {
+		chrome.storage.local.get({
+			next_poll: 0
+		}, function(items) {
+			var minutes = items.next_poll.toString();
 			document.getElementById('nextRefresh').innerHTML = chrome.i18n.getMessage('nextrefresh', minutes);
-		};
-		
-		document.getElementById('manuelrefresh').addEventListener('click', function() {
-			localStorage.setItem('next_poll', 0);
-			previousRun = '0';
-			popup.loading(true);
-			refresh();
 		});
-		
-		refresh();
-		setInterval(refresh, 30000);
 	},
 	
 	getDate3MonthAgo: function() {
@@ -99,6 +113,10 @@ var popup = {
 		}
 	},
 	
+	NONE_ROW: '<tr>' +
+				'<td class="mdl-data-table__cell--non-numeric">' + chrome.i18n.getMessage('none') + '</td>' +
+			'</tr>',
+	
 	listReviewsToDo: function() {
 		popup.loading(true);
 		
@@ -119,6 +137,8 @@ var popup = {
 				});
 				if(tbody.length) {
 					document.getElementById('reviewtodotbody').innerHTML = tbody.join('');
+				} else {
+					document.getElementById('reviewtodotbody').innerHTML = popup.NONE_ROW;
 				}
 				popup.loading(false);
 			});
@@ -149,6 +169,8 @@ var popup = {
 				});
 				if(tbody.length) {
 					document.getElementById('commentstoreadtbody').innerHTML = tbody.join('');			
+				} else {
+					document.getElementById('commentstoreadtbody').innerHTML = popup.NONE_ROW;
 				}
 				popup.loading(false);
 			});

@@ -59,9 +59,6 @@
 	"listinactiveuser": {
 		"message": "Inactive"
 	},
-	"refresh": {
-		"message": "Refresh"
-	},
 	"listinactiveuserdetals": {
 		"message": "List all users with no reviews at all"
 	},

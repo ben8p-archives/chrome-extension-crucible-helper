@@ -14,7 +14,10 @@ var events = {
 	
 	launch: function() {
 		events.installNotice();	
-		localStorage.setItem('next_poll', 0);
+		chrome.storage.local.set({
+			next_poll: 0,
+			loading: true
+		}, function() {});
 		
 		chrome.notifications.onClicked.addListener(function () {
 			crucible.getCredentials().then(function() {
@@ -22,13 +25,20 @@ var events = {
 			});
 		});
 		chrome.alarms.onAlarm.addListener(function() {
-			var next = +(localStorage.getItem('next_poll') || 0);
-			if(next === 0) {
-				localStorage.setItem('next_poll', 10);
-				events.showNotifications();
-			} else {
-				localStorage.setItem('next_poll', --next);
-			}
+			chrome.storage.local.get({
+				next_poll: 0
+			}, function(items) {
+				if(items.next_poll <= 0) {
+					chrome.storage.local.set({
+						next_poll: 10
+					}, function() {});
+					events.showNotifications();
+				} else {
+					chrome.storage.local.set({
+						next_poll: --items.next_poll
+					}, function() {});
+				}
+			});
 		});
 		
 		chrome.alarms.create("crucible", {delayInMinutes: 0.1, periodInMinutes: 1});
@@ -49,16 +59,18 @@ var events = {
 							message: chrome.i18n.getMessage('reviewsToDo', reviewIds.length.toString())
 						}, function(notificationId) {});
 					}
-					chrome.storage.local.set({
-						toReview: reviewIds
-					}, function() {});
 				}
+				chrome.storage.local.set({
+					toReview: reviewIds,
+					loading: false
+				}, function() {});
 			});
 			crucible.getAllReviewsUserParticipatedTo(crucible.MYSELF, true).then(crucible.getReviewsWithUnreadComments).then(function(reviewIds) {
 				chrome.browserAction.setBadgeText({text: (reviewIds.length ? reviewIds.length : '').toString()});
 				
 				chrome.storage.local.set({
-					comments: reviewIds
+					comments: reviewIds,
+					loading: false
 				}, function() {});
 			});
 			
