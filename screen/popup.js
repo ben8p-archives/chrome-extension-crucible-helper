@@ -2,8 +2,9 @@ require([
 	'../module/i18n',
 	'../module/crucible',
 	'../module/dom',
-	'../module/settings'
-], function(dummyI18n, crucible, dom, settings) {
+	'../module/settings',
+	'../module/notification'
+], function(dummyI18n, crucible, dom, settings, notification) {
 	// summary:
 	//		popup page scripts
 
@@ -42,7 +43,7 @@ require([
 		loading(true);
 		crucible.getCredentials().then(function() {
 			crucible.getOpenReviewsOlderThan(getDate3MonthAgo()).then(crucible.summarizeAndCloseAllReview).then(function() {
-				window.alert(chrome.i18n.getMessage('cleanupReviewsOlderThanThreeMonthsDone'));
+				notification.open(chrome.i18n.getMessage('done'), chrome.i18n.getMessage('cleanupReviewsOlderThanThreeMonthsDone'));
 				loading(false);
 			}, hasError);
 		}, hasError);
@@ -54,7 +55,7 @@ require([
 			loading(true);
 			crucible.getCredentials().then(function() {
 				crucible.getReviewsFromUser(user).then(crucible.summarizeAndCloseAllReview).then(function() {
-					window.alert(chrome.i18n.getMessage('userCanBeDeleted', user));
+					notification.open(chrome.i18n.getMessage('done'), chrome.i18n.getMessage('userCanBeDeleted', user));
 					loading(false);
 				}, hasError);
 			}, hasError);

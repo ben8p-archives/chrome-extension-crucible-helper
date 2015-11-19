@@ -23,6 +23,9 @@
 	"description": {
 		"message": "This extension add some functionalities to Crucible"
 	},
+	"done": {
+		"message": "Done!"
+	},
 	"dontForget": {
 		"message": "don't forget!"
 	},

@@ -1,7 +1,8 @@
 require([
 	'../module/crucible',
-	'../module/settings'
-], function(crucible, settings) {
+	'../module/settings',
+	'../module/notification'
+], function(crucible, settings, notification) {
 	// summary:
 	//		long running script closure
 
@@ -30,12 +31,7 @@ require([
 				if(lastReviewCount !== reviewIds.length) {
 					localStorage.setItem('lastReviewCount', reviewIds.length);
 					if(reviewIds.length > 0) {
-						chrome.notifications.create('reminder', {
-							type: 'basic',
-							iconUrl: 'icon.png',
-							title: chrome.i18n.getMessage('dontForget'),
-							message: chrome.i18n.getMessage('reviewsToDo', reviewIds.length.toString())
-						}, function() { return true; });
+						notification.open(chrome.i18n.getMessage('dontForget'), chrome.i18n.getMessage('reviewsToDo', reviewIds.length.toString()));
 					}
 				}
 				chrome.storage.local.set({
@@ -65,11 +61,6 @@ require([
 			loading: true
 		}, function() { return true; });
 
-		chrome.notifications.onClicked.addListener(function() {
-			crucible.getCredentials().then(function(credentials) {
-				chrome.tabs.create({url: credentials.restUrl});
-			});
-		});
 		chrome.alarms.onAlarm.addListener(function() {
 			chrome.storage.local.get({
 				nextPollIn: 0
