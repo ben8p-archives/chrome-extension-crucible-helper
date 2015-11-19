@@ -1,72 +1,62 @@
 {
-	"name": {
-		"message": "Crucible helper"
-	},
-	"description": {
-		"message": "This extension add some functionalities to Crucible"
-	},
-	"saved": {
-		"message": "All options are saved."
-	},
-	"options": {
-		"message": "-- Options"
+	"admin": {
+		"message": "Are you admin?"
 	},
 	"api": {
 		"message": "Crucible REST Api:"
 	},
-	"user": {
-		"message": "Crucible User:"
-	},
-	"admin": {
-		"message": "Are you admin?"
-	},
-	"password": {
-		"message": "Crucible Password:"
-	},
-	"save": {
-		"message": "Save"
-	},
-	"optionsfirst": {
-		"message": "Something went wrong, maybe you didn't configure properly the extension, or maybe you are not admin. Please first visit the options page to double check the settings"
-	},
-	"deleteuser": {
-		"message": "Select a user to cleanup. All active reviews will be closed."
-	},
 	"cleanup": {
 		"message": "Cleanup"
 	},
-	"cleanupuser": {
-		"message": "Users"
-	},
-	"cleanupreview": {
-		"message": "Reviews"
-	},
-	"review": {
-		"message": "Reviews"
-	},
-	"onlyadmin": {
-		"message": "This panel is only available for admins"
-	},
-	"cleanupreview3month": {
+	"cleanupReviewsOlderThanThreeMonths": {
 		"message": "Close all review older than 3 months"
 	},
-	"cleanup3monthdone": {
+	"cleanupReviewsOlderThanThreeMonthsDone": {
 		"message": "All reviews older than 3 months are closed"
 	},
-	"dontforget": {
+	"cleanupUser": {
+		"message": "Select a user to cleanup. All active reviews will be closed."
+	},
+	"commentsToRead": {
+		"message": "Comments to read"
+	},
+	"description": {
+		"message": "This extension add some functionalities to Crucible"
+	},
+	"dontForget": {
 		"message": "don't forget!"
-	},
-	"listinactiveuser": {
-		"message": "Inactive"
-	},
-	"listinactiveuserdetals": {
-		"message": "List all users with no reviews at all"
 	},
 	"list": {
 		"message": "Create list"
 	},
-	"users": {
-		"message": "Users"
+	"listInactiveUsers": {
+		"message": "Inactive"
+	},
+	"listInactiveUsersDetails": {
+		"message": "List all users with no reviews at all"
+	},
+	"name": {
+		"message": "Crucible helper"
+	},
+	"nextRefresh": {
+		"message": "Next refresh in $minutes$ minutes.",
+		"placeholders": {
+			"minutes": {
+				"content": "$1"
+			}
+		}
+	},
+	"none": {
+		"message": "none"
+	},
+	"onlyForAdmin": {
+		"message": "This panel is only available for admins"
+	},
+	"options": {
+		"message": "-- Options"
+	},
+	"reviews": {
+		"message": "Reviews"
 	},
 	"reviewsToDo": {
 		"message": "You have $details$ reviews to do.",
@@ -76,29 +66,33 @@
 			}
 		}
 	},
-	"nextrefresh": {
-		"message": "Next refresh in $minutes$ minutes.",
-		"placeholders": {
-			"minutes": {
-				"content": "$1"
-			}
-		}
+	"password": {
+		"message": "Crucible Password:"
+	},
+	"save": {
+		"message": "Save"
+	},
+	"saved": {
+		"message": "All options are saved."
+	},
+	"settingsFirst": {
+		"message": "Something went wrong, maybe you didn't configure properly the extension, or maybe you are not admin. Please first visit the options page to double check the settings"
 	},
 	"todo": {
 		"message": "Reviews to do"
 	},
-	"none": {
-		"message": "none"
+	"user": {
+		"message": "Crucible User:"
 	},
-	"commentstoread": {
-		"message": "Comments to read"
-	},
-	"deletableuser": {
+	"userCanBeDeleted": {
 		"message": "The user $user$ can now be deleted.",
 		"placeholders": {
 			"user": {
 				"content": "$1"
 			}
 		}
+	},
+	"users": {
+		"message": "Users"
 	}
 }

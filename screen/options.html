@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>__MSG_name__ __MSG_options__</title>
+		<script src="../vendor/requireJs/require.js"></script>
+		<link rel="stylesheet" href="../css/style.css">
+		<link rel="stylesheet" href="../vendor/materialDesignLite/material.min.css">
+		<script src="../vendor/materialDesignLite/material.min.js"></script>
+	</head>
+	<body>
+		<div>
+			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+				<input class="mdl-textfield__input" type="text" id="crucibleRestUrlInput">
+				<label class="mdl-textfield__label" for="crucibleRestUrlInput">__MSG_api__</label>
+			</div>
+		</div>
+		<div>
+
+			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+				<input class="mdl-textfield__input" type="text" id="crucibleUserInput">
+				<label class="mdl-textfield__label" for="crucibleUserInput">__MSG_user__</label>
+			</div>
+		</div>
+		<div>
+			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+				<input class="mdl-textfield__input" type="password" id="cruciblePasswordInput">
+				<label class="mdl-textfield__label" for="cruciblePasswordInput">__MSG_cruciblePasswordInput__</label>
+			</div>
+		</div>
+
+		<div>
+			<label id="isAdminInputWrapper" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="isAdminInput">
+				<input type="checkbox" id="isAdminInput" class="mdl-checkbox__input">
+				<span class="mdl-checkbox__label">__MSG_admin__</span>
+			</label>
+		</div>
+
+		<div>
+			<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="saveButton">__MSG_save__</button>
+		</div>
+
+		<div id="saveStatusMessage"></div>
+	</body>
+	<script src="options.js"></script>
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+	<head>
+		<title>__MSG_name__</title>
+		<script src="../vendor/requireJs/require.js"></script>
+		<link rel="stylesheet" href="../css/style.css">
+		<link rel="stylesheet" href="../vendor/materialDesignLite/material.min.css">
+		<script src="../vendor/materialDesignLite/material.min.js"></script>
+	</head>
+	<body>
+		<div id="errorMessage" class="error hidden">
+			__MSG_settingsFirst__
+		</div>
+		<div id="contentWrapper">
+			<div id="progressMessage" class="hidden mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+			<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+				<div class="mdl-tabs__tab-bar">
+					<a href="#reviewPanelContent" class="mdl-tabs__tab is-active">__MSG_reviews__</a>
+					<a id="cleanupPanelLink" href="#cleanupPanelContent" class="mdl-tabs__tab">__MSG_cleanup__</a>
+				</div>
+				<div class="mdl-tabs__panel is-active" id="reviewPanelContent">
+					<div>
+						<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="refreshButton"> <i class="material-icons">update</i></button>
+						<span id="nextRefreshMessage"></span>
+					</div>
+
+					<table class="fullWidth mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+						<thead>
+							<tr>
+								<th class="mdl-data-table__cell--non-numeric">__MSG_todo__</th>
+							</tr>
+						</thead>
+						<tbody id="reviewsTodoListTableBody">
+							<tr>
+								<td class="mdl-data-table__cell--non-numeric">__MSG_none__</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<table class="fullWidth mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+						<thead>
+							<tr>
+								<th class="mdl-data-table__cell--non-numeric">__MSG_commentsToRead__</th>
+							</tr>
+						</thead>
+						<tbody id="commentsToReadyListTableBody">
+							<tr>
+								<td class="mdl-data-table__cell--non-numeric">__MSG_none__</td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>
+				<div class="mdl-tabs__panel" id="cleanupPanelContent">
+					<div id="onlyForAdminMessage" class="error hidden">
+						__MSG_onlyForAdmin__
+					</div>
+					<div id="onlyForAdminContent">
+						<h4>__MSG_users__</h4>
+						<div>
+							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+								<select class="mdl-textfield__input" type="text" id="usersListInput"><option value=""></option></select>
+								<label class="mdl-textfield__label" for="usersListInput">__MSG_cleanupUser__</label>
+							</div>
+						</div>
+						<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="deleteButton">__MSG_cleanup__</button>
+
+						<h4>__MSG_reviews__</h4>
+						<div>__MSG_cleanupReviewsOlderThanThreeMonths__</div>
+						<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="delete3MonthsReviewsButton">__MSG_cleanup__</button>
+
+						<h4>__MSG_listInactiveUsers__</h4>
+						<div>__MSG_listInactiveUsersDetails__</div>
+						<table id="usersListTable" class="hidden mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+							<thead>
+								<tr>
+									<th class="mdl-data-table__cell--non-numeric">__MSG_users__</th>
+								</tr>
+							</thead>
+							<tbody id="usersListTableBody">
+							</tbody>
+						</table>
+						<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="listInactiveUsersButton">__MSG_list__</button>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</body>
+	<script src="popup.js"></script>
+</html>
+
