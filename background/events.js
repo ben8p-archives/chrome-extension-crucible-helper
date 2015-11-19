@@ -6,7 +6,8 @@ require([
 	// summary:
 	//		long running script closure
 
-	var chrome = window.chrome;
+	var chrome = window.chrome,
+		lastReviewCount = -1;
 
 	function openSettingsAfterIntall() {
 		// summary:
@@ -27,9 +28,8 @@ require([
 			if(!credentials.user || !credentials.password) { return; }
 
 			crucible.getReviewsToDo().then(function(reviewIds) {
-				var lastReviewCount = localStorage.getItem('lastReviewCount');
 				if(lastReviewCount !== reviewIds.length) {
-					localStorage.setItem('lastReviewCount', reviewIds.length);
+					lastReviewCount = reviewIds.length;
 					if(reviewIds.length > 0) {
 						notification.open(chrome.i18n.getMessage('dontForget'), chrome.i18n.getMessage('reviewsToDo', reviewIds.length.toString()));
 					}
