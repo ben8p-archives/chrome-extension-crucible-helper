@@ -3,8 +3,10 @@ require([
 	'../module/crucible',
 	'../module/dom',
 	'../module/settings',
-	'../module/notification'
-], function(dummyI18n, crucible, dom, settings, notification) {
+	'../module/notification',
+	'../module/loading',
+	'../module/CONSTANTS'
+], function(dummyI18n, crucible, dom, settings, notification, loading, CONSTANTS) {
 	// summary:
 	//		popup page scripts
 
@@ -14,14 +16,16 @@ require([
 		USER_ROW = '<tr><td class="mdl-data-table__cell--non-numeric">$user$</td></tr>';
 
 
-	function loading(state) {
-		dom.hide(document.getElementById('progressMessage'), !state);
+	function showLoading() {
+		loading.isLoading().then(function(state) {
+			dom.hide(document.getElementById('progressMessage'), !state);
+		});
 	}
 
 	function hasError() {
 		dom.hide(document.getElementById('errorMessage'), false);
 		dom.hide(document.getElementById('contentWrapper'), true);
-		loading(false);
+		loading.update(false);
 	}
 
 	function refresh() {
@@ -40,11 +44,11 @@ require([
 	}
 
 	function delete3MonthsReviews() {
-		loading(true);
+		loading.update(true);
 		crucible.getCredentials().then(function() {
 			crucible.getOpenReviewsOlderThan(getDate3MonthAgo()).then(crucible.summarizeAndCloseAllReview).then(function() {
 				notification.open(chrome.i18n.getMessage('done'), chrome.i18n.getMessage('cleanupReviewsOlderThanThreeMonthsDone'));
-				loading(false);
+				loading.update(false);
 			}, hasError);
 		}, hasError);
 	}
@@ -52,18 +56,18 @@ require([
 	function deleteUser() {
 		var user = document.getElementById('usersListInput').value;
 		if(user) {
-			loading(true);
+			loading.update(true);
 			crucible.getCredentials().then(function() {
 				crucible.getReviewsFromUser(user).then(crucible.summarizeAndCloseAllReview).then(function() {
 					notification.open(chrome.i18n.getMessage('done'), chrome.i18n.getMessage('userCanBeDeleted', user));
-					loading(false);
+					loading.update(false);
 				}, hasError);
 			}, hasError);
 		}
 	}
 
 	function listReviewsToDo() {
-		loading(true);
+		loading.update(true);
 
 		chrome.storage.sync.get({
 			crucibleRestUrl: ''
@@ -78,13 +82,13 @@ require([
 					tbody.push(REVIEW_ROW.replace(/\$reviewId\$/g, reviewId).replace(/\$url\$/g, url));
 				});
 				document.getElementById('reviewsTodoListTableBody').innerHTML = tbody.length ? tbody.join('') : NONE_ROW;
-				loading(false);
+				loading.update(false);
 			});
 		});
 	}
 
 	function listCommentsToRead() {
-		loading(true);
+		loading.update(true);
 
 		chrome.storage.sync.get({
 			crucibleRestUrl: ''
@@ -103,14 +107,14 @@ require([
 					tbody.push(REVIEW_ROW.replace(/\$reviewId\$/g, reviewId).replace(/\$url\$/g, url));
 				});
 				document.getElementById('commentsToReadyListTableBody').innerHTML = tbody.length ? tbody.join('') : NONE_ROW;
-				loading(false);
+				loading.update(false);
 			});
 		});
 	}
 
 
 	function listInactiveUsers() {
-		loading(true);
+		loading.update(true);
 		crucible.getCredentials().then(crucible.getAllUsers).then(crucible.getInactiveUsers).then(function(users) {
 			var tbody = [];
 			users.forEach(function(user) {
@@ -120,7 +124,7 @@ require([
 
 			dom.hide(document.getElementById('usersListTable'), false);
 
-			loading(false);
+			loading.update(false);
 		}, hasError);
 	}
 
@@ -129,15 +133,20 @@ require([
 			storageChange;
 		for(key in changes) {
 			if(changes.hasOwnProperty(key)) {
+				storageChange = changes[key];
 				if(key === 'nextPollIn') {
+					if(storageChange.newValue === 0) {
+						loading.update(true);
+					} else if(storageChange.newValue === CONSTANTS.POLL_EVERY) {
+						loading.update(false);
+					}
 					refresh();
 				} else if(key === 'toReview') {
 					listReviewsToDo();
 				} else if(key === 'comments') {
 					listCommentsToRead();
 				} else if(key === 'loading') {
-					storageChange = changes[key];
-					loading(!!storageChange.newValue);
+					showLoading();
 				}
 			}
 		}
@@ -146,13 +155,13 @@ require([
 	function init() {
 		crucible.getCredentials().then(function(credentials) {
 			if(credentials.isAdmin) {
-				loading(true);
+				loading.update(true);
 				crucible.getAllUsers().then(function(usernames) {
 					usernames.forEach(function(username) {
 						var option = document.createElement('option');
 						option.value = option.innerHTML = username;
 						document.getElementById('usersListInput').appendChild(option);
-						loading(false);
+						loading.update(false);
 					});
 					document.getElementById('deleteButton').addEventListener('click', deleteUser);
 				}, hasError);
@@ -168,11 +177,11 @@ require([
 			chrome.storage.onChanged.addListener(onStorageChange);
 			document.getElementById('refreshButton').addEventListener('click', function() {
 				chrome.storage.local.set({
-					nextPollIn: 0,
-					loading: (new Date()).getTime()
+					nextPollIn: 0
 				}, function() { return true; });
 			});
 
+			showLoading();
 			refresh();
 			listReviewsToDo();
 			listCommentsToRead();

@@ -1,8 +1,10 @@
 require([
 	'../module/crucible',
 	'../module/settings',
-	'../module/notification'
-], function(crucible, settings, notification) {
+	'../module/notification',
+	'../module/loading',
+	'../module/CONSTANTS'
+], function(crucible, settings, notification, loading, CONSTANTS) {
 	// summary:
 	//		long running script closure
 
@@ -27,6 +29,8 @@ require([
 		crucible.getCredentials().then(function(credentials) {
 			if(!credentials.user || !credentials.password) { return; }
 
+			loading.update(true);
+
 			crucible.getReviewsToDo().then(function(reviewIds) {
 				if(lastReviewCount !== reviewIds.length) {
 					lastReviewCount = reviewIds.length;
@@ -35,17 +39,20 @@ require([
 					}
 				}
 				chrome.storage.local.set({
-					toReview: reviewIds,
-					loading: false
+					toReview: reviewIds
 				}, function() { return true; });
+				loading.update(false);
 			});
+
+			loading.update(true);
+
 			crucible.getAllReviewsUserParticipatedTo(credentials.user, true).then(crucible.getReviewsWithUnreadComments).then(function(reviewIds) {
 				chrome.browserAction.setBadgeText({text: (reviewIds.length || '').toString()});
 
 				chrome.storage.local.set({
-					comments: reviewIds,
-					loading: false
+					comments: reviewIds
 				}, function() { return true; });
+				loading.update(false);
 			});
 
 		});
@@ -57,8 +64,7 @@ require([
 
 		openSettingsAfterIntall();
 		chrome.storage.local.set({
-			nextPollIn: 0,
-			loading: true
+			nextPollIn: 0
 		}, function() { return true; });
 
 		chrome.alarms.onAlarm.addListener(function() {
@@ -67,7 +73,7 @@ require([
 			}, function(items) {
 				if(items.nextPollIn <= 0) {
 					chrome.storage.local.set({
-						nextPollIn: 10
+						nextPollIn: CONSTANTS.POLL_EVERY
 					}, function() { return true; });
 					showNotifications();
 				} else {
@@ -78,7 +84,7 @@ require([
 			});
 		});
 
-		chrome.alarms.create('events', {delayInMinutes: 0.1, periodInMinutes: 1});
+		chrome.alarms.create('events', {delayInMinutes: 1, periodInMinutes: 1});
 	}
 
 	init();
