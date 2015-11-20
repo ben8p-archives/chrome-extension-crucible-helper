@@ -45,11 +45,9 @@ require([
 
 	function delete3MonthsReviews() {
 		loading.update(true);
-		crucible.getCredentials().then(function() {
-			crucible.getOpenReviewsOlderThan(getDate3MonthAgo()).then(crucible.summarizeAndCloseAllReview).then(function() {
-				notification.open(chrome.i18n.getMessage('done'), chrome.i18n.getMessage('cleanupReviewsOlderThanThreeMonthsDone'));
-				loading.update(false);
-			}, hasError);
+		crucible.getOpenReviewsOlderThan(getDate3MonthAgo()).then(crucible.summarizeAndCloseAllReview).then(function() {
+			notification.open(chrome.i18n.getMessage('done'), chrome.i18n.getMessage('cleanupReviewsOlderThanThreeMonthsDone'));
+			loading.update(false);
 		}, hasError);
 	}
 
@@ -57,11 +55,9 @@ require([
 		var user = document.getElementById('usersListInput').value;
 		if(user) {
 			loading.update(true);
-			crucible.getCredentials().then(function() {
-				crucible.getReviewsFromUser(user).then(crucible.summarizeAndCloseAllReview).then(function() {
-					notification.open(chrome.i18n.getMessage('done'), chrome.i18n.getMessage('userCanBeDeleted', user));
-					loading.update(false);
-				}, hasError);
+			crucible.getReviewsFromUser(user).then(crucible.summarizeAndCloseAllReview).then(function() {
+				notification.open(chrome.i18n.getMessage('done'), chrome.i18n.getMessage('userCanBeDeleted', user));
+				loading.update(false);
 			}, hasError);
 		}
 	}
@@ -115,7 +111,7 @@ require([
 
 	function listInactiveUsers() {
 		loading.update(true);
-		crucible.getCredentials().then(crucible.getAllUsers).then(crucible.getInactiveUsers).then(function(users) {
+		crucible.getAllUsers().then(crucible.getInactiveUsers).then(function(users) {
 			var tbody = [];
 			users.forEach(function(user) {
 				tbody.push(USER_ROW.replace(/\$user\$/g, user));

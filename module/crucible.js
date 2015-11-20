@@ -4,32 +4,32 @@ define([
 	//		Crucible closure
 
 	var chrome = window.chrome,
-		api = {},
-		API_ROOT = '',
-		MYSELF = '',
-		PASSWORD = '';
+		api = {};
 
 	function xhr(url, method, body) {
 		// summary:
 		//		perform a request to the api
 		method = method || 'GET';
 		return new Promise(function(resolve, reject) {
-			var xhrObject = new XMLHttpRequest();
+			api.getCredentials().then(function(credentials) {
 
-			xhrObject.addEventListener('load', function(response) {
-				if(response.target.status === 404 || response.target.status === 401) {
-					reject();
-				} else {
-					resolve(response.target.responseXML);
-				}
-			}, false);
-			xhrObject.addEventListener('error', reject, false);
+				var xhrObject = new XMLHttpRequest();
 
-			xhrObject.open(method, url);
-			xhrObject.setRequestHeader('Authorization', 'Basic ' + window.btoa(MYSELF + ':' + PASSWORD));
-			xhrObject.setRequestHeader('Content-Type', 'application/xml');
+				xhrObject.addEventListener('load', function(response) {
+					if(response.target.status === 404 || response.target.status === 401) {
+						reject();
+					} else {
+						resolve(response.target.responseXML);
+					}
+				}, false);
+				xhrObject.addEventListener('error', reject, false);
 
-			xhrObject.send(body || null);
+				xhrObject.open(method, credentials.restUrl + url);
+				xhrObject.setRequestHeader('Authorization', 'Basic ' + window.btoa(credentials.user + ':' + credentials.password));
+				xhrObject.setRequestHeader('Content-Type', 'application/xml; charset=UTF-8');
+
+				xhrObject.send(body || null);
+			}, reject);
 		});
 	}
 
@@ -38,7 +38,7 @@ define([
 			// summary:
 			//		retrieve reviews older than a certain date
 			return new Promise(function(resolve, reject) {
-				var url = API_ROOT + 'rest-service/reviews-v1/filter/allOpenReviews/details';
+				var url = 'rest-service/reviews-v1/filter/allOpenReviews/details';
 				xhr(url).then(function(data) {
 					var olderList = [].slice.call(data.querySelectorAll('detailedReviewData')).filter(function(node) {
 						var createDate = new Date(node.querySelectorAll('createDate')[0].textContent);
@@ -61,7 +61,7 @@ define([
 				states += ',Draft,Closed,Dead,Rejected';
 			}
 			return new Promise(function(resolve, reject) {
-				var url = API_ROOT + 'rest-service/reviews-v1/filter/details?author=' + user + '&moderator=' + user + '&creator=' + user + '&reviewer=' + user + '&orRoles=true&states=' + states;
+				var url = 'rest-service/reviews-v1/filter/details?author=' + user + '&moderator=' + user + '&creator=' + user + '&reviewer=' + user + '&orRoles=true&states=' + states;
 				xhr(url).then(function(data) {
 					if(!data) {
 						console.warn('ERROR with user:', user);
@@ -80,7 +80,7 @@ define([
 			//		Get all reviews when user is the author
 			user = user.toLowerCase();
 			return new Promise(function(resolve, reject) {
-				var url = API_ROOT + 'rest-service/reviews-v1/filter/details?author=' + user;
+				var url = 'rest-service/reviews-v1/filter/details?author=' + user;
 				xhr(url).then(function(data) {
 					resolve([].slice.call(data.querySelectorAll('detailedReviewData>permaId>id')).map(function(node) {
 						return node.textContent;
@@ -93,7 +93,7 @@ define([
 			// summary:
 			//		get all reviews a user has to do
 			return new Promise(function(resolve, reject) {
-				var url = API_ROOT + 'rest-service/reviews-v1/filter/toReview';
+				var url = 'rest-service/reviews-v1/filter/toReview';
 				xhr(url).then(function(data) {
 					resolve([].slice.call(data.querySelectorAll('reviewData>permaId>id')).map(function(node) {
 						return node.textContent;
@@ -106,7 +106,7 @@ define([
 			// summary:
 			//		return the amount of unread comments for a certain review
 			return new Promise(function(resolve, reject) {
-				var url = API_ROOT + 'rest-service/reviews-v1/' + reviewId + '/comments';
+				var url = 'rest-service/reviews-v1/' + reviewId + '/comments';
 				xhr(url).then(function(data) {
 					var hasUnread = [].slice.call(data.querySelectorAll('readStatus')).filter(function(node) {
 						return node.textContent.indexOf('UNREAD') >= 0;
@@ -171,7 +171,7 @@ define([
 			// summary:
 			//		summarize a riview
 			return new Promise(function(resolve, reject) {
-				var url = API_ROOT + 'rest-service/reviews-v1/' + reviewId + '/transition?action=action:summarizeReview';
+				var url = 'rest-service/reviews-v1/' + reviewId + '/transition?action=action:summarizeReview';
 				xhr(url, 'POST').then(resolve, reject);
 			});
 		},
@@ -180,7 +180,7 @@ define([
 			// summary:
 			//		close a review
 			return new Promise(function(resolve, reject) {
-				var url = API_ROOT + 'rest-service/reviews-v1/' + reviewId + '/close';
+				var url = 'rest-service/reviews-v1/' + reviewId + '/close';
 				xhr(url, 'POST', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><closeReviewSummary><summary>Automatic close</summary></closeReviewSummary>').then(resolve, reject);
 			});
 		},
@@ -188,8 +188,10 @@ define([
 			// summary:
 			//		Add current user as reviewer
 			return new Promise(function(resolve, reject) {
-				var url = API_ROOT + 'rest-service/reviews-v1/' + reviewId + '/reviewers';
-				xhr(url, 'POST', MYSELF).then(resolve, reject);
+				api.getCredentials().then(function(credentials) {
+					var url = 'rest-service/reviews-v1/' + reviewId + '/reviewers';
+					xhr(url, 'POST', credentials.user).then(resolve, reject);
+				}, reject);
 			});
 		},
 
@@ -197,7 +199,7 @@ define([
 			// summary:
 			//		retrieve all crucible users
 			return new Promise(function(resolve, reject) {
-				var url = API_ROOT + 'rest-service/users-v1';
+				var url = 'rest-service/users-v1';
 				xhr(url).then(function(data) {
 					resolve([].slice.call(data.querySelectorAll('userData>userName')).map(function(node) {
 						return node.textContent;
@@ -243,14 +245,11 @@ define([
 					if(!items.crucibleRestUrl || !items.user || !items.password) {
 						reject();
 					} else {
-						API_ROOT = items.crucibleRestUrl + (items.crucibleRestUrl.substr(-1) !== '/' ? '/' : '');
-						MYSELF = items.user;
-						PASSWORD = items.password;
 						resolve({
 							user: items.user,
 							password: items.password,
 							isAdmin: items.admin,
-							restUrl: API_ROOT
+							restUrl: items.crucibleRestUrl + (items.crucibleRestUrl.substr(-1) !== '/' ? '/' : '')
 						});
 					}
 				});

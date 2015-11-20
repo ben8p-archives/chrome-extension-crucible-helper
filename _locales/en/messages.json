@@ -3,7 +3,7 @@
 		"message": "Are you admin?"
 	},
 	"api": {
-		"message": "Crucible REST Api:"
+		"message": "Crucible server:"
 	},
 	"cleanup": {
 		"message": "Cleanup"
@@ -15,7 +15,10 @@
 		"message": "All reviews older than 3 months are closed"
 	},
 	"cleanupUser": {
-		"message": "Select a user to cleanup. All active reviews will be closed."
+		"message": "Select a user to cleanup:"
+	},
+	"cleanupUserDetails": {
+		"message": "All active reviews for the user will be closed."
 	},
 	"commentsToRead": {
 		"message": "Comments to read"
@@ -31,9 +34,6 @@
 	},
 	"list": {
 		"message": "Create list"
-	},
-	"listInactiveUsers": {
-		"message": "Inactive"
 	},
 	"listInactiveUsersDetails": {
 		"message": "List all users with no reviews at all"
