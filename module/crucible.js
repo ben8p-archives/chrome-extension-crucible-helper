@@ -75,12 +75,16 @@ define([
 			});
 		},
 
-		getReviewsFromUser: function(user) {
+		getReviewsFromUser: function(user, activeOnly) {
 			// summary:
 			//		Get all reviews when user is the author
 			user = user.toLowerCase();
+			var states = 'Approval,Review,Summarize,Unknown';
+			if(activeOnly !== true) {
+				states += ',Draft,Closed,Dead,Rejected';
+			}
 			return new Promise(function(resolve, reject) {
-				var url = 'rest-service/reviews-v1/filter/details?author=' + user;
+				var url = 'rest-service/reviews-v1/filter/details?author=' + user + '&states=' + states;
 				xhr(url).then(function(data) {
 					resolve([].slice.call(data.querySelectorAll('detailedReviewData>permaId>id')).map(function(node) {
 						return node.textContent;

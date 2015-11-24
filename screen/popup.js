@@ -55,7 +55,7 @@ require([
 		var user = document.getElementById('usersListInput').value;
 		if(user) {
 			loading.update(true);
-			crucible.getReviewsFromUser(user).then(crucible.summarizeAndCloseAllReview).then(function() {
+			crucible.getReviewsFromUser(user, true).then(crucible.summarizeAndCloseAllReview).then(function() {
 				notification.open(chrome.i18n.getMessage('done'), chrome.i18n.getMessage('userCanBeDeleted', user));
 				loading.update(false);
 			}, hasError);
