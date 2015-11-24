@@ -18,7 +18,7 @@ define([
 			// summary:
 			//		open a basic notification
 
-			chrome.notifications.create('notification', {
+			chrome.notifications.create('notification' + (new Date()).getTime(), {
 				type: 'basic',
 				iconUrl: 'icon.png',
 				title: title,
