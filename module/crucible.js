@@ -253,7 +253,7 @@ define([
 							user: items.user,
 							password: items.password,
 							isAdmin: items.admin,
-							restUrl: items.crucibleRestUrl + (items.crucibleRestUrl.substr(-1) !== '/' ? '/' : '')
+							restUrl: items.crucibleRestUrl
 						});
 					}
 				});

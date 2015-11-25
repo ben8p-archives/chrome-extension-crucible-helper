@@ -14,6 +14,9 @@ require([
 			password = document.getElementById('cruciblePasswordInput').value,
 			admin = document.getElementById('isAdminInput').checked;
 
+		//add leading slash
+		crucibleRestUrl += crucibleRestUrl.substr(-1) !== '/' ? '/' : '';
+
 		chrome.storage.sync.set({
 			crucibleRestUrl: crucibleRestUrl,
 			user: user,
@@ -34,7 +37,7 @@ require([
 	function init() {
 		document.getElementById('saveButton').addEventListener('click', saveOptions);
 		chrome.storage.sync.get({
-			crucibleRestUrl: 'https://itrf-review.europe.intranet:8043/',
+			crucibleRestUrl: '',
 			user: '',
 			password: '',
 			admin: false
