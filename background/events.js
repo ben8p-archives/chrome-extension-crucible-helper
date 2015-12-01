@@ -58,6 +58,38 @@ require([
 		});
 	}
 
+	function onAlarmFired() {
+		chrome.storage.local.get({
+			nextPollIn: 0
+		}, function(items) {
+			if(items.nextPollIn <= 0) {
+				chrome.storage.local.set({
+					nextPollIn: CONSTANTS.POLL_EVERY
+				}, function() { return true; });
+				showNotifications();
+			} else {
+				chrome.storage.local.set({
+					nextPollIn: --items.nextPollIn
+				}, function() { return true; });
+			}
+		});
+	}
+
+	function onStorageChange(changes) {
+		var key,
+			settingHasChanged = false;
+		for(key in changes) {
+			if(changes.hasOwnProperty(key)) {
+				if(key === 'crucibleRestUrl' || key === 'user' || key === 'password') {
+					settingHasChanged = true;
+				}
+			}
+		}
+		if(settingHasChanged) {
+			showNotifications();
+		}
+	}
+
 	function init() {
 		// summary:
 		//		Init the long running script
@@ -67,24 +99,13 @@ require([
 			nextPollIn: 0
 		}, function() { return true; });
 
-		chrome.alarms.onAlarm.addListener(function() {
-			chrome.storage.local.get({
-				nextPollIn: 0
-			}, function(items) {
-				if(items.nextPollIn <= 0) {
-					chrome.storage.local.set({
-						nextPollIn: CONSTANTS.POLL_EVERY
-					}, function() { return true; });
-					showNotifications();
-				} else {
-					chrome.storage.local.set({
-						nextPollIn: --items.nextPollIn
-					}, function() { return true; });
-				}
-			});
-		});
+		chrome.alarms.onAlarm.addListener(onAlarmFired);
 
 		chrome.alarms.create('events', {delayInMinutes: 1, periodInMinutes: 1});
+
+		showNotifications();
+
+		chrome.storage.onChanged.addListener(onStorageChange);
 	}
 
 	init();
