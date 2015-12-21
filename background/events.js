@@ -23,6 +23,17 @@ require([
 		settings.open();
 	}
 
+	function setIcon(count) {
+		var icon = {
+			path: 'icons/icon.png'
+		};
+		if(count > 9) {
+			icon.path = 'icons/more.png';
+		} else if(count > 0) {
+			icon.path = 'icons/' + count + '.png';
+		}
+		chrome.browserAction.setIcon(icon);
+	}
 	function showNotifications() {
 		// summary:
 		//		show a chrome notification
@@ -37,6 +48,7 @@ require([
 					if(reviewIds.length > 0) {
 						notification.open(chrome.i18n.getMessage('dontForget'), chrome.i18n.getMessage('reviewsToDo', reviewIds.length.toString()));
 					}
+					setIcon(reviewIds.length);
 				}
 				chrome.storage.local.set({
 					toReview: reviewIds
