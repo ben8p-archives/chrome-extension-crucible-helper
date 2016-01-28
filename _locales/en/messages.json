@@ -35,6 +35,9 @@
 	"list": {
 		"message": "Create list"
 	},
+	"withCommentsToRead": {
+		"message": " (has new comments)"
+	},
 	"listInactiveUsersDetails": {
 		"message": "List all users with no reviews at all"
 	},

@@ -12,5 +12,14 @@ define([
 			} else {
 				node.className = node.className.replace(/hidden/g, '');
 			}
+		},
+		visited: function(node, state) {
+			// summary:
+			//		mark a node visitied or not
+			if(state) {
+				node.className += ' visited';
+			} else {
+				node.className = node.className.replace(/visited/g, '');
+			}
 		}
 	};});

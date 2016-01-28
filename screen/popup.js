@@ -12,7 +12,7 @@ require([
 
 	var chrome = window.chrome,
 		NONE_ROW = '<tr><td class="mdl-data-table__cell--non-numeric">' + chrome.i18n.getMessage('none') + '</td></tr>',
-		REVIEW_ROW = '<tr><td class="mdl-data-table__cell--non-numeric"><a href="$url$" target="_reviews">$reviewId$</a></td></tr>',
+		REVIEW_ROW = '<tr><td class="mdl-data-table__cell--non-numeric"><a href="javascript:void();" data-href="$url$" data-review-id="$reviewId$" target="_reviews">$label$</a></td></tr>',
 		USER_ROW = '<tr><td class="mdl-data-table__cell--non-numeric">$user$</td></tr>';
 
 
@@ -62,6 +62,18 @@ require([
 		}
 	}
 
+	function updateVisitedReviewsId() {
+		chrome.storage.local.get({
+			visitedReviewsIds: []
+		}, function(items) {
+			var links = document.querySelectorAll('a[data-review-id]');
+			[].forEach.call(links, function(link) {
+				var reviewId = link.getAttribute('data-review-id');
+				dom.visited(link, items.visitedReviewsIds.indexOf(reviewId) >= 0);
+			});
+		});
+	}
+
 	function listReviewsToDo() {
 		loading.update(true);
 
@@ -69,15 +81,24 @@ require([
 			crucibleRestUrl: ''
 		}, function(syncItems) {
 			chrome.storage.local.get({
-				toReview: []
+				toReview: [],
+				comments: []
 			}, function(items) {
 				var tbody = [];
 
 				items.toReview.forEach(function(reviewId) {
-					var url = syncItems.crucibleRestUrl + 'cru/' + reviewId;
-					tbody.push(REVIEW_ROW.replace(/\$reviewId\$/g, reviewId).replace(/\$url\$/g, url));
+					var url = syncItems.crucibleRestUrl + 'cru/' + reviewId,
+						label = reviewId;
+
+					if(items.comments.indexOf(reviewId) !== -1) {
+						//already listed in the list of reviews with comments
+						label += chrome.i18n.getMessage('withCommentsToRead');
+					}
+
+					tbody.push(REVIEW_ROW.replace(/\$reviewId\$/g, reviewId).replace(/\$url\$/g, url).replace(/\$label\$/g, label));
 				});
 				document.getElementById('reviewsTodoListTableBody').innerHTML = tbody.length ? tbody.join('') : NONE_ROW;
+				updateVisitedReviewsId();
 				loading.update(false);
 			});
 		});
@@ -90,7 +111,8 @@ require([
 			crucibleRestUrl: ''
 		}, function(syncItems) {
 			chrome.storage.local.get({
-				comments: []
+				comments: [],
+				toReview: []
 			}, function(items) {
 				var tbody = [],
 					previous = null;
@@ -99,10 +121,15 @@ require([
 						return;
 					}
 					previous = reviewId;
+					if(items.toReview.indexOf(reviewId) !== -1) {
+						//already listed in the things to review
+						return;
+					}
 					var url = syncItems.crucibleRestUrl + 'cru/' + reviewId;
-					tbody.push(REVIEW_ROW.replace(/\$reviewId\$/g, reviewId).replace(/\$url\$/g, url));
+					tbody.push(REVIEW_ROW.replace(/\$reviewId\$/g, reviewId).replace(/\$url\$/g, url).replace(/\$label\$/g, reviewId));
 				});
 				document.getElementById('commentsToReadyListTableBody').innerHTML = tbody.length ? tbody.join('') : NONE_ROW;
+				updateVisitedReviewsId();
 				loading.update(false);
 			});
 		});
@@ -143,9 +170,34 @@ require([
 					listCommentsToRead();
 				} else if(key === 'loading') {
 					showLoading();
+				} else if(key === 'visitedReviewsIds') {
+					updateVisitedReviewsId();
 				}
 			}
 		}
+	}
+
+	function connectClickEvent() {
+		document.getElementById('reviewPanelContent').addEventListener('click', function(event) {
+			if(event.target.tagName.toLowerCase() === 'a') {
+
+				var reviewId = event.target.getAttribute('data-review-id'),
+					url = event.target.getAttribute('data-href');
+				chrome.storage.local.get({
+					visitedReviewsIds: []
+				}, function(items) {
+					items.visitedReviewsIds.push(reviewId);
+					console.warn(items.visitedReviewsIds);
+					chrome.storage.local.set({
+						visitedReviewsIds: items.visitedReviewsIds
+					}, function() {
+						updateVisitedReviewsId();
+						window.open(url);
+					});
+				});
+
+			}
+		}, false);
 	}
 
 	function init() {
@@ -181,6 +233,8 @@ require([
 			refresh();
 			listReviewsToDo();
 			listCommentsToRead();
+
+			connectClickEvent();
 
 		}, settings.open);
 	}

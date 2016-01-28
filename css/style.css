@@ -34,3 +34,6 @@
 .fullWidth {
 	width: 100%;
 }
+a.visited {
+	color: green;
+}

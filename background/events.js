@@ -34,12 +34,20 @@ require([
 		}
 		chrome.browserAction.setIcon(icon);
 	}
+
+	function clearVisitedReviewsId() {
+		chrome.storage.local.set({
+			visitedReviewsIds: []
+		}, function() { return true; });
+	}
+
+
 	function showNotifications() {
 		// summary:
 		//		show a chrome notification
 		crucible.getCredentials().then(function(credentials) {
 			if(!credentials.user || !credentials.password) { return; }
-
+			clearVisitedReviewsId();
 			loading.update(true);
 
 			crucible.getReviewsToDo().then(function(reviewIds) {
