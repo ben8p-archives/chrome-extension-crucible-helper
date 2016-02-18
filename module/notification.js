@@ -20,7 +20,7 @@ define([
 
 			chrome.notifications.create('notification' + (new Date()).getTime(), {
 				type: 'basic',
-				iconUrl: 'icons/icon.png',
+				iconUrl: '/icons/icon.png',
 				title: title,
 				message: message
 			}, function() { return true; });
