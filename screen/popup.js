@@ -56,8 +56,25 @@ require([
 		if(user) {
 			loading.update(true);
 			crucible.getReviewsFromUser(user, true).then(crucible.summarizeAndCloseAllReview).then(function() {
-				notification.open(chrome.i18n.getMessage('done'), chrome.i18n.getMessage('userCanBeDeleted', user));
-				loading.update(false);
+				var currentReviewId = 0,
+					proceedReviewers = function(inProgressReviewer) {
+						if(user === inProgressReviewer) {
+							//it is the user to delete
+							loading.update(true);
+							crucible.removeUserFromReview(currentReviewId, user).then(function() {
+								loading.update(false);
+							}, hasError);
+						}
+					};
+
+				crucible.getAllOpenReviewsDetails().then(function(reviewsDetails) {
+					reviewsDetails.forEach(function(review) {
+						currentReviewId = review.id;
+						review.inProgressReviewers.forEach(proceedReviewers);
+					});
+					loading.update(false);
+					notification.open(chrome.i18n.getMessage('done'), chrome.i18n.getMessage('userCanBeDeleted', user));
+				}, hasError);
 			}, hasError);
 		}
 	}

@@ -75,6 +75,31 @@ define([
 			});
 		},
 
+		getAllOpenReviewsDetails: function() {
+			// summary:
+			//		get all opens reviews details
+			return new Promise(function(resolve, reject) {
+				var url = 'rest-service/reviews-v1/filter/allOpenReviews/details';
+				xhr(url).then(function(data) {
+					if(!data) {
+						console.warn('ERROR can\'t retrieve all reviews');
+						resolve(null);
+					} else {
+						resolve([].slice.call(data.querySelectorAll('detailedReviewData')).map(function(node) {
+							return {
+								id: node.querySelector('permaId>id').textContent,
+								inProgressReviewers: [].slice.call(node.querySelectorAll('reviewers>reviewer')).filter(function(reviewerNode) {
+									return reviewerNode.querySelector('completed').textContent !== 'true';
+								}).map(function(reviewerNode) {
+									return reviewerNode.querySelector('userName').textContent;
+								}) || []
+							};
+						}));
+					}
+				}, reject);
+			});
+		},
+
 		getReviewsFromUser: function(user, activeOnly) {
 			// summary:
 			//		Get all reviews when user is the author
@@ -196,6 +221,15 @@ define([
 					var url = 'rest-service/reviews-v1/' + reviewId + '/reviewers';
 					xhr(url, 'POST', credentials.user).then(resolve, reject);
 				}, reject);
+			});
+		},
+
+		removeUserFromReview: function(reviewId, userName) {
+			// summary:
+			//		Remove a user from a review
+			return new Promise(function(resolve, reject) {
+				var url = 'rest-service/reviews-v1/' + reviewId + '/reviewers/' + escape(userName);
+				xhr(url, 'DELETE').then(resolve, reject);
 			});
 		},
 
